@@ -1,0 +1,11 @@
+@use "../../styles/variables.scss";
+@use "../../styles/mixins.scss";
+
+.field {
+  width: 20px;
+  padding: 10px;
+  border-bottom: 1px solid variables.$font-color;
+  text-align: center;
+  font-weight: 700;
+  @include mixins.flexBox();
+}

@@ -1,0 +1,29 @@
+@use "../../styles/variables.scss";
+
+.letter_container {
+  background-color: transparent;
+
+  padding: 10px;
+  border: 1px solid variables.$font-color;
+  border-radius: 2px;
+  transition: transform ease-in-out 0.3s, border-color ease-in-out 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.2);
+    transition: transform ease-in-out 0.3s;
+  }
+
+  &:active:not(:disabled) {
+    border-color: variables.$main-color;
+    transition: border-color ease-in-out 0.1s;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.letter_item {
+  font-size: 18px;
+}

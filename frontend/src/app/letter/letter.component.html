@@ -1,0 +1,7 @@
+<button
+  class="letter_container"
+  [disabled]="isEnded ? true : wasClicked ? true : false"
+  (click)="handleClick()"
+>
+  <span class="letter_item">{{ letter }}</span>
+</button>

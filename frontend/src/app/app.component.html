@@ -1,0 +1,23 @@
+<app-left-chances [leftChances]="leftChances"></app-left-chances>
+
+<section class="letters">
+  <app-field
+    *ngFor="let letter of guessedLetters"
+    [letter]="letter.guessedLetter"
+  ></app-field>
+</section>
+
+<section class="letters">
+  <app-letter
+    *ngFor="let letter of ALPHABET"
+    [letter]="letter"
+    [isEnded]="isEnded"
+    (click)="checkIfLetterInWord(letter)"
+  ></app-letter>
+</section>
+
+<section class="button-wrapper">
+  <button class="generate-button" (click)="handleGenerateWord()">
+    Generate word
+  </button>
+</section>

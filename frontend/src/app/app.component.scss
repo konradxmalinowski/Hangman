@@ -1,0 +1,28 @@
+@use "../styles/mixins.scss";
+@use "../styles/variables.scss";
+
+.letters {
+  @include mixins.flexBox();
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 40px;
+  max-width: 1000px;
+}
+
+.button-wrapper {
+  @include mixins.flexBox();
+}
+
+.generate-button {
+  background-color: variables.$main-color;
+  border: none;
+  border-radius: 20px;
+  font-size: 19px;
+  padding: 15px 25px;
+  transition: transform ease-in-out 0.3s;
+
+  &:hover {
+    transform: scale(1.1);
+    transition: transform ease-in-out 0.3s;
+  }
+}
