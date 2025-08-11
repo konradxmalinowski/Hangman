@@ -1,8 +1,7 @@
 @use "../../styles/variables.scss";
 
-.letter_container {
+.letter__container {
   background-color: transparent;
-
   padding: 10px;
   border: 1px solid variables.$font-color;
   border-radius: 2px;
@@ -24,6 +23,7 @@
   }
 }
 
-.letter_item {
+.letter__item {
   font-size: 18px;
+  font-weight: 700;
 }
