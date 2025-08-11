@@ -1,0 +1,19 @@
+<section class="dialog">
+  <button (click)="closeDialog()">Close</button>
+  <ng-template *ngIf="scores">
+    <div *ngFor="let score of scores">
+      <div>
+        Id: <span class="bold">{{ score.id }}</span>
+      </div>
+      <div>
+        Result: <span class="bold">{{ score.win }}</span>
+      </div>
+      <div *ngIf="score.win">
+        LeftChances: <span class="bold">{{ score.leftChances }}</span>
+      </div>
+      <div>
+        Date: <span class="bold">{{ score.date }}</span>
+      </div>
+    </div>
+  </ng-template>
+</section>

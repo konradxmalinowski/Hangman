@@ -19,7 +19,7 @@ public class Score implements Serializable {
     private int id;
     private boolean win;
     private int leftChances;
-    @Column(name = "date", columnDefinition = "DATE DEFAULT CURRENT_DATE")
+    @Column(name = "date", columnDefinition = "DATE DEFAULT CURRENT_DATE", insertable = false, updatable = false)
     private Date date;
 
 

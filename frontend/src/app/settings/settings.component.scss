@@ -1,0 +1,10 @@
+@use "../../styles/mixins.scss";
+@use "../../styles/variables.scss";
+
+.settings__button {
+  background-color: transparent;
+  border: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
