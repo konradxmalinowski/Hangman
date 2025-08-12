@@ -15,24 +15,35 @@ public class HangmanController {
     HangmanRepository hangmanRepository;
 
     @GetMapping("/scores")
-    public ResponseEntity<List<Score>> getScores(){
+    public ResponseEntity<List<Score>> getScores() {
         List<Score> scores = hangmanRepository.findAll();
 
-        if (scores.isEmpty()){
+        if (scores.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(scores, HttpStatus.OK);
     }
 
     @GetMapping("/scores/{id}")
-    public ResponseEntity<Score> getScore(@PathVariable int id){
+    public ResponseEntity<Score> getScore(@PathVariable int id) {
         Optional<Score> score = hangmanRepository.findById(id);
 
         return score.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/scores")
-    public ResponseEntity<Score> saveScore(@RequestBody Score score){
+    public ResponseEntity<Score> saveScore(@RequestBody Score score) {
         return new ResponseEntity<>(hangmanRepository.save(score), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/scores/{id}")
+    public ResponseEntity<Score> deleteScore(@PathVariable int id) {
+        if (hangmanRepository.existsById(id)) {
+            hangmanRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
     }
 }
