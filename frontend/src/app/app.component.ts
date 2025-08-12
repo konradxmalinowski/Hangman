@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ALPHABET, WORDS } from './Constants';
-import { checkLetterObject } from './types';
+import { checkLetterObject, Score } from './types';
+import { HistoryService } from './history.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 function generateWord(): string {
   return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
@@ -23,9 +25,17 @@ export class AppComponent {
   generatedWord: string[] = [];
   ALPHABET: string[] = ALPHABET.map((letter) => letter.toUpperCase());
   isEnded: boolean = false;
+  historyService: HistoryService = inject(HistoryService);
+  scores: Score[] = [];
 
   ngOnInit() {
     this.handleGenerateWord();
+    this.historyService.getAllScoresFromDatabase().subscribe(
+      (scores: Score[]) => (this.scores = scores),
+      (error: HttpErrorResponse) => {
+        console.log(error.message);
+      }
+    );
   }
 
   checkIfLetterInWord(letter: string) {
@@ -41,6 +51,7 @@ export class AppComponent {
       } else {
         this.fillMissingLetters();
         this.isEnded = true;
+        this.handleAddScore(false, 0);
         alert(`Game over!`);
       }
       return;
@@ -51,6 +62,12 @@ export class AppComponent {
         item.guessedLetter = letter;
       }
     });
+
+    if (this.checkIfGuessed()) {
+      this.handleAddScore(true, this.leftChances);
+      this.isEnded = true;
+      alert('Congrats!! You won');
+    }
   }
 
   fillMissingLetters() {
@@ -66,5 +83,22 @@ export class AppComponent {
     this.guessedLetters = createStructure(this.generatedWord);
     this.leftChances = 5;
     this.isEnded = false;
+  }
+
+  checkIfGuessed() {
+    return this.guessedLetters.every(
+      (item) => item.letter === item.guessedLetter
+    );
+  }
+
+  handleAddScore(win: boolean, leftChances: number) {
+    this.historyService.addScore(win, leftChances).subscribe(
+      (scores: Score[]) => {
+        this.scores = scores;
+      },
+      (error: HttpErrorResponse) => {
+        console.log(error.message);
+      }
+    );
   }
 }

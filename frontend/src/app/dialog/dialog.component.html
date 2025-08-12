@@ -1,19 +1,57 @@
 <section class="dialog">
-  <button (click)="closeDialog()">Close</button>
-  <ng-template *ngIf="scores">
-    <div *ngFor="let score of scores">
+  <ng-container *ngIf="scores && scores.length > 0; else noScores">
+    <div *ngFor="let score of scores" class="dialog__item">
       <div>
-        Id: <span class="bold">{{ score.id }}</span>
+        Game nr: <span class="dialog__bold">{{ score.id }}</span>
       </div>
       <div>
-        Result: <span class="bold">{{ score.win }}</span>
+        Result:
+        <span class="dialog__bold">{{ score.win ? "win" : "loss" }}</span>
       </div>
       <div *ngIf="score.win">
-        LeftChances: <span class="bold">{{ score.leftChances }}</span>
+        Left chances: <span class="dialog__bold">{{ score.leftChances }}</span>
       </div>
       <div>
-        Date: <span class="bold">{{ score.date }}</span>
+        Date:
+        <span class="dialog__bold">{{
+          score?.date?.toString()?.slice(0, 10)
+        }}</span>
       </div>
+      <button
+        *ngIf="score.id"
+        class="dialog__item-button"
+        (click)="handleDeleteScore(score.id)"
+      >
+        <svg
+          fill="#fff"
+          height="40px"
+          width="40px"
+          version="1.1"
+          id="Layer_1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 300.003 300.003"
+          xml:space="preserve"
+        >
+          <g>
+            <g>
+              <path
+                d="M150,0C67.159,0,0.001,67.159,0.001,150c0,82.838,67.157,150.003,149.997,150.003S300.002,232.838,300.002,150
+          C300.002,67.159,232.839,0,150,0z M206.584,207.171c-5.989,5.984-15.691,5.984-21.675,0l-34.132-34.132l-35.686,35.686
+          c-5.986,5.984-15.689,5.984-21.672,0c-5.989-5.991-5.989-15.691,0-21.68l35.683-35.683L95.878,118.14
+          c-5.984-5.991-5.984-15.691,0-21.678c5.986-5.986,15.691-5.986,21.678,0l33.222,33.222l31.671-31.673
+          c5.986-5.984,15.694-5.986,21.675,0c5.989,5.991,5.989,15.697,0,21.678l-31.668,31.671l34.13,34.132
+          C212.57,191.475,212.573,201.183,206.584,207.171z"
+              />
+            </g>
+          </g>
+        </svg>
+      </button>
     </div>
+  </ng-container>
+  <button (click)="closeDialog()" class="dialog__button">Close</button>
+
+  <ng-template #noScores>
+    <p>No scores available</p>
   </ng-template>
 </section>

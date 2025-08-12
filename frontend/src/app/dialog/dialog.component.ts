@@ -10,19 +10,18 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./dialog.component.scss'],
 })
 export class DialogComponent {
-  private historyService: HistoryService = inject(HistoryService);
+  historyService: HistoryService = inject(HistoryService);
   dialogRef = inject(MatDialogRef<DialogComponent>);
-  data = inject(MAT_DIALOG_DATA);
-  scores: Score[] = [];
+  scores: Score[] = inject(MAT_DIALOG_DATA);
 
-  ngOnInit() {
-    this.historyService.getAllScores().subscribe(
-      (response: Score[]) => {
-        this.scores = response;
+  handleDeleteScore(id: number) {
+    this.historyService.deleteScore(id).subscribe(
+      (scores: Score[]) => {
+        this.scores = scores;
+        console.log(this.scores);
       },
-
       (error: HttpErrorResponse) => {
-        console.log(error.message);
+        console.error('Error deleting score:', error);
       }
     );
   }

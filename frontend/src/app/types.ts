@@ -4,8 +4,8 @@ export interface checkLetterObject {
 }
 
 export interface Score {
-  id: number;
-  date: Date;
+  id?: number;
+  date?: Date;
   leftChances: number;
   win: boolean;
 }

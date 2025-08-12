@@ -1,9 +1,58 @@
+@use ".././../styles/variables.scss";
+@use "../../styles/mixins.scss";
+
 .dialog {
+  min-width: 300px;
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50% -50%);
+  transform: translateX(-50%) translateY(-50%);
   z-index: 3;
-  background-color: red;
+  background-color: #1c1c1c;
   color: white;
+  padding: 20px;
+  border-radius: 5px;
+  @include mixins.flexBox(column);
+  row-gap: 20px;
+}
+
+.dialog__item {
+  position: relative;
+  width: 100%;
+
+  div {
+    margin-bottom: 5px;
+  }
+}
+
+.dialog__item-button {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dialog-backdrop {
+  backdrop-filter: blur(10px);
+  background-color: variables.$bg-color;
+}
+
+.dialog__button {
+  width: 90%;
+  background-color: variables.$main-color;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+  }
+}
+
+.dialog__bold {
+  font-weight: bold;
 }
