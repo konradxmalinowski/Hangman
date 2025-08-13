@@ -31,7 +31,7 @@ export class AppComponent {
   ngOnInit() {
     this.handleGenerateWord();
     this.historyService.getAllScoresFromDatabase().subscribe(
-      (scores: Score[]) => (this.scores = scores),
+      (scores: Score[]) => (this.scores = [...scores]),
       (error: HttpErrorResponse) => {
         console.log(error.message);
       }
@@ -94,10 +94,10 @@ export class AppComponent {
   handleAddScore(win: boolean, leftChances: number) {
     this.historyService.addScore(win, leftChances).subscribe(
       (scores: Score[]) => {
-        this.scores = scores;
+        this.scores = [...scores];
       },
       (error: HttpErrorResponse) => {
-        console.log(error.message);
+        alert(error.message);
       }
     );
   }

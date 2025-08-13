@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, switchMap } from 'rxjs';
 import { Score } from './types';
 
 @Injectable({
@@ -9,7 +9,6 @@ import { Score } from './types';
 export class HistoryService {
   private URL = 'http://localhost:8080/scores';
   private httpClient: HttpClient = inject(HttpClient);
-  private scores: Score[] = [];
 
   getAllScoresFromDatabase(): Observable<Score[]> {
     return this.httpClient.get<Score[]>(this.URL);
@@ -27,33 +26,23 @@ export class HistoryService {
     return this.httpClient.delete<void>(`${this.URL}/${id}`);
   }
 
-  deleteScore(id: number): Score[] {
-    this.deleteScoreFromDatabase(id).subscribe(
-      () => {
-        this.scores = this.scores.filter((score) => score.id !== id);
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error);
-      }
+  deleteScore(id: number): Observable<Score[]> {
+    return this.deleteScoreFromDatabase(id).pipe(
+      switchMap(() => this.getAllScoresFromDatabase())
     );
-
-    return this.scores;
   }
 
-  addScore(win: boolean, leftChances: number): Score[] {
-    this.addScoreToDatabase({
+  addScore(win: boolean, leftChances: number): Observable<Score[]> {
+    const score: Score = {
       leftChances: leftChances,
       win: win,
-    } as Score).subscribe(
-      (score: Score) => {
-        console.log('Score has been added');
-        this.scores.push(score);
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error.message);
-      }
-    );
+      date: new Date(),
+    };
 
-    return this.scores;
+    return this.addScoreToDatabase(score).pipe(
+      switchMap(() => {
+        return this.getAllScoresFromDatabase();
+      })
+    );
   }
 }
