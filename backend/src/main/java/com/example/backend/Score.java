@@ -14,7 +14,7 @@ import java.util.Date;
 @Entity
 public class Score implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
     private Integer id;
     private boolean win;
