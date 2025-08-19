@@ -44,8 +44,6 @@ export class AppComponent {
     );
 
     if (!foundItem) {
-      console.log('Letter was not found');
-
       if (this.leftChances > 0) {
         this.leftChances--;
       } else {
@@ -97,7 +95,7 @@ export class AppComponent {
         this.scores = [...scores];
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        console.log(error.message);
       }
     );
   }
