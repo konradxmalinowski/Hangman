@@ -16,12 +16,17 @@ public class HangmanController {
 
     @GetMapping("/scores")
     public ResponseEntity<List<Score>> getScores() {
-        List<Score> scores = hangmanRepository.findAll();
+        List<Score> scores = getScoreList();
 
         if (scores.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(scores, HttpStatus.OK);
+    }
+
+    private List<Score> getScoreList() {
+        List<Score> scores = hangmanRepository.findAll();
+        return scores;
     }
 
     @GetMapping("/scores/{id}")
