@@ -1,152 +1,338 @@
-## Hangman 🎮
+# Hangman Backend API
 
-A full‑stack Hangman game built with Angular and Spring Boot. Guess the word, track your results, and learn a few Polish letters along the way! 🇵🇱🧩
+RESTful API dla gry Hangman zbudowane w Spring Boot z Redis caching, Swagger dokumentacją i profesjonalnymi praktykami.
 
-### Features ✨
+## Technologie
 
-- **Play Hangman**: 5 lives, instant feedback, and a random word every round
-- **Polish alphabet support**: includes diacritics like Ą, Ć, Ę, Ł, Ń, Ó, Ś, Ź, Ż
-- **Score history**: results are saved to MySQL and viewable via a modal
-- **Responsive UI**: Angular + Angular Material dialog
+- **Spring Boot 3.5.4**
+- **Java 24**
+- **MySQL 8** - baza danych
+- **Redis** - cachowanie zapytań
+- **Swagger/OpenAPI** - dokumentacja API
+- **Lombok** - redukcja boilerplate code
+- **ModelMapper** - mapowanie DTO ↔ Entity
+- **Bean Validation** - walidacja danych
 
-### Tech Stack 🧱
+## Architektura
 
-- **Frontend**: Angular 15, SCSS, Angular Material
-- **Backend**: Spring Boot 3, Spring Web, Spring Data JPA, Lombok
-- **Database**: MySQL 8 (JPA `ddl-auto=update`)
+Projekt wykorzystuje czystą architekturę warstwową:
 
-### Monorepo Structure 📁
+```
+┌─────────────────┐
+│   Controller    │  ← REST API endpoints
+├─────────────────┤
+│     Service     │  ← Logika biznesowa + Cache
+├─────────────────┤
+│   Repository    │  ← Dostęp do bazy danych
+├─────────────────┤
+│     Entity      │  ← Modele JPA
+└─────────────────┘
 
-- `frontend/`: Angular application (dev server on `http://localhost:4200`)
-- `backend/`: Spring Boot API (default on `http://localhost:8080`)
+     ↕ Mapper ↕
 
----
-
-## Quick Start 🚀
-
-### Prerequisites
-
-- Node.js 16–18 and npm
-- Java 21+ (project is configured for `java.version=24`)
-- MySQL 8 running locally with a database named `hangman`
-
-### 1) Backend (Spring Boot)
-
-1. Configure MySQL in `backend/src/main/resources/application.properties`:
-   - `spring.datasource.url=jdbc:mysql://localhost:3306/hangman?useSSL=false`
-   - `spring.datasource.username=root`
-   - `spring.datasource.password=` (set your password if needed)
-2. Start the API:
-
-```bash
-cd backend
-./mvnw spring-boot:run   # Windows: mvnw.cmd spring-boot:run
+┌─────────────────┐
+│      DTO        │  ← Warstwa prezentacji
+└─────────────────┘
 ```
 
-The API runs at `http://localhost:8080`.
+## Funkcje
 
-Note: CORS allows `http://localhost:4200` by default (see `CorsConfig`).
+- ✅ CRUD operacje dla wyników gry
+- ✅ Redis caching dla wydajności
+- ✅ Walidacja danych z @Valid
+- ✅ Global Exception Handler
+- ✅ Swagger UI dokumentacja
+- ✅ Logowanie z SLF4J
+- ✅ DTO pattern z mapperami
+- ✅ CORS configuration
+- ✅ Transaction management
 
-### 2) Frontend (Angular)
+## Wymagania
 
-1. Install dependencies:
+- Java 24 lub nowszy
+- Maven 3.6+
+- MySQL 8.0+
+- Redis 6.0+
 
+## Instalacja
+
+### 1. Zainstaluj Redis
+
+**Windows (Docker):**
 ```bash
-cd frontend
-npm install
+docker run -d -p 6379:6379 --name redis redis:latest
 ```
 
-2. Start the dev server:
-
+**Linux/MacOS:**
 ```bash
-npm start
+# Ubuntu/Debian
+sudo apt install redis-server
+sudo systemctl start redis
+
+# MacOS
+brew install redis
+brew services start redis
 ```
 
-The app runs at `http://localhost:4200`.
+Sprawdź czy działa:
+```bash
+redis-cli ping
+# Powinno zwrócić: PONG
+```
 
----
+### 2. Skonfiguruj MySQL
 
-## API Reference 🔌
+Utwórz bazę danych:
+```sql
+CREATE DATABASE hangman;
+```
 
-Base URL: `http://localhost:8080`
+Zaktualizuj `application.properties` jeśli używasz innego hasła:
+```properties
+spring.datasource.password=twoje_haslo
+```
 
-Entity `Score`:
+### 3. Zbuduj projekt
 
+```bash
+mvn clean install
+```
+
+### 4. Uruchom aplikację
+
+```bash
+mvn spring-boot:run
+```
+
+Aplikacja będzie dostępna pod adresem: `http://localhost:8080`
+
+## Dokumentacja API
+
+Po uruchomieniu aplikacji otwórz:
+
+**Swagger UI:**
+```
+http://localhost:8080/swagger-ui.html
+```
+
+**OpenAPI JSON:**
+```
+http://localhost:8080/api-docs
+```
+
+## Endpointy
+
+| Metoda | Endpoint | Opis | Cache |
+|--------|----------|------|-------|
+| GET | `/api/scores` | Pobierz wszystkie wyniki | ✅ 10 min |
+| GET | `/api/scores/{id}` | Pobierz wynik po ID | ✅ 10 min |
+| POST | `/api/scores` | Utwórz nowy wynik | ❌ (evict) |
+| DELETE | `/api/scores/{id}` | Usuń wynik | ❌ (evict) |
+
+## Przykłady Użycia
+
+### Utworzenie nowego wyniku
+
+```bash
+curl -X POST http://localhost:8080/api/scores \
+  -H "Content-Type: application/json" \
+  -d '{
+    "win": true,
+    "leftChances": 3
+  }'
+```
+
+**Odpowiedź:**
 ```json
 {
   "id": 1,
   "win": true,
   "leftChances": 3,
-  "date": "2025-01-01"
+  "date": "2025-12-30"
 }
 ```
 
-Endpoints:
-
-- `GET /scores` → list all scores
-- `GET /scores/{id}` → get score by id
-- `POST /scores` → create score
-- `DELETE /scores/{id}` → remove score
-
-Examples:
+### Pobranie wszystkich wyników
 
 ```bash
-curl http://localhost:8080/scores
-
-curl -X POST http://localhost:8080/scores \
-  -H "Content-Type: application/json" \
-  -d '{"win":true,"leftChances":4}'
-
-curl -X DELETE http://localhost:8080/scores/1
+curl http://localhost:8080/api/scores
 ```
 
----
+### Pobranie wyniku po ID
 
-## Gameplay Notes 🎯
+```bash
+curl http://localhost:8080/api/scores/1
+```
 
-- You start with 5 lives
-- Letters are case‑insensitive and shown in uppercase
-- Missed guesses reduce lives; run out and the full word is revealed
-- Winning or losing saves a `Score` to the backend
+### Usunięcie wyniku
 
----
+```bash
+curl -X DELETE http://localhost:8080/api/scores/1
+```
 
-## Scripts 📜
+## Walidacja
 
-Frontend:
+Przykład błędu walidacji przy nieprawidłowych danych:
 
-- `npm start` → dev server at `4200`
-- `npm run build` → production build to `dist/frontend`
+```bash
+curl -X POST http://localhost:8080/api/scores \
+  -H "Content-Type: application/json" \
+  -d '{
+    "leftChances": 15
+  }'
+```
 
-Backend:
+**Odpowiedź (400 Bad Request):**
+```json
+{
+  "timestamp": "2025-12-30T10:30:00",
+  "status": 400,
+  "error": "Validation Failed",
+  "message": "Invalid input data",
+  "path": "/api/scores",
+  "details": [
+    "win: Win status cannot be null",
+    "leftChances: Left chances cannot exceed 10"
+  ]
+}
+```
 
-- `mvnw spring-boot:run` → start API
-- `mvnw test` → run tests
+## Cache Redis
 
----
+### Działanie cache:
 
-## Configuration ⚙️
+1. **Pierwsze zapytanie** - pobiera z bazy, zapisuje do Redis
+2. **Kolejne zapytania** - pobiera z Redis (szybsze)
+3. **Po 10 minutach** - TTL wygasa, ponownie z bazy
+4. **POST/DELETE** - czyści cały cache
 
-- CORS origin is `http://localhost:4200` (`backend/src/main/java/com/example/backend/CorsConfig.java`)
-- MySQL credentials are set in `backend/src/main/resources/application.properties`
-- JPA uses `hibernate.ddl-auto=update` and `MySQL8Dialect`
+### Monitorowanie cache:
 
----
+```bash
+# Sprawdź klucze w Redis
+redis-cli KEYS "hangman:*"
 
-## Troubleshooting 🛠️
+# Monitor operacji w czasie rzeczywistym
+redis-cli monitor
 
-- If the frontend can’t fetch scores, ensure the backend is running on port 8080 and MySQL is reachable
-- Check CORS if using a different frontend origin
-- Verify Node/Java versions (Angular 15 works best with Node 16–18)
+# Sprawdź TTL klucza
+redis-cli TTL "hangman:scores::allScores"
+```
 
----
+## Struktura Projektu
 
-## Screenshot 🖼️
+```
+src/main/java/com/example/backend/
+├── config/
+│   ├── CorsConfig.java          # CORS configuration
+│   ├── OpenApiConfig.java       # Swagger configuration
+│   └── RedisConfig.java         # Redis cache configuration
+├── dto/
+│   ├── ErrorResponse.java       # Error response format
+│   └── ScoreDTO.java           # Score data transfer object
+├── exception/
+│   ├── GlobalExceptionHandler.java
+│   ├── InvalidScoreDataException.java
+│   └── ScoreNotFoundException.java
+├── mapper/
+│   └── ScoreMapper.java        # DTO ↔ Entity mapping
+├── service/
+│   └── ScoreService.java       # Business logic + caching
+├── HangmanController.java      # REST endpoints
+├── HangmanRepository.java      # JPA repository
+├── Score.java                  # JPA entity
+└── BackendApplication.java     # Main application
+```
 
-<img width="1122" height="646" alt="Hangman screenshot" src="https://github.com/user-attachments/assets/3fb26c1d-3e52-470c-857b-ea1f503a8306" />
+## Konfiguracja
 
----
+Główne ustawienia w `application.properties`:
 
-## License 📄
+```properties
+# Server
+server.port=8080
 
-Licensed under the MIT License. See `LICENSE` for details.
+# MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/hangman
+spring.datasource.username=root
+spring.datasource.password=
+
+# Redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# Cache
+spring.cache.type=redis
+spring.cache.redis.time-to-live=600000  # 10 minut
+
+# Swagger
+springdoc.swagger-ui.path=/swagger-ui.html
+```
+
+## Rozwój
+
+### Dodanie nowego endpointu:
+
+1. Dodaj metodę w `HangmanController`
+2. Dodaj logikę biznesową w `ScoreService`
+3. Dodaj adnotacje cache jeśli potrzebne
+4. Dokumentuj z @Operation i @ApiResponse
+5. Testuj w Swagger UI
+
+### Best Practices:
+
+- ✅ Używaj DTO zamiast encji w API
+- ✅ Dodawaj walidację z Bean Validation
+- ✅ Używaj constructor injection (@RequiredArgsConstructor)
+- ✅ Loguj ważne operacje
+- ✅ Obsługuj błędy w GlobalExceptionHandler
+- ✅ Dokumentuj wszystko w Swagger
+
+## Logi
+
+Aplikacja loguje:
+- Wszystkie zapytania SQL (hibernate)
+- Cache miss/hit (ScoreService)
+- Utworzenie/usunięcie wyników
+- Błędy i wyjątki
+
+Poziomy logowania:
+```properties
+logging.level.root=INFO
+logging.level.com.example.backend=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+```
+
+## Troubleshooting
+
+### Redis connection refused
+```bash
+# Sprawdź czy Redis działa
+redis-cli ping
+
+# Uruchom Redis
+redis-server
+```
+
+### MySQL connection refused
+```bash
+# Sprawdź czy MySQL działa
+sudo systemctl status mysql
+
+# Uruchom MySQL
+sudo systemctl start mysql
+```
+
+### Port 8080 zajęty
+Zmień port w `application.properties`:
+```properties
+server.port=8081
+```
+
+## Licencja
+
+MIT License
+
+## Autor
+
+Hangman API - Demo project for Spring Boot best practices
