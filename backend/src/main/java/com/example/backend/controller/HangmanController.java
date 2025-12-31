@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.controller;
 
 import com.example.backend.dto.ScoreDTO;
 import com.example.backend.service.ScoreService;
