@@ -1,6 +1,6 @@
 package com.example.backend.mapper;
 
-import com.example.backend.Score;
+import com.example.backend.entity.Score;
 import com.example.backend.dto.ScoreDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

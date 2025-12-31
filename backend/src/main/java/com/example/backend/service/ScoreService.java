@@ -1,14 +1,13 @@
 package com.example.backend.service;
 
-import com.example.backend.Score;
-import com.example.backend.HangmanRepository;
+import com.example.backend.entity.Score;
+import com.example.backend.repository.HangmanRepository;
 import com.example.backend.dto.ScoreDTO;
 import com.example.backend.exception.ScoreNotFoundException;
 import com.example.backend.mapper.ScoreMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
