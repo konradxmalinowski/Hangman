@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ErrorResponse implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     private LocalDateTime timestamp;
     private int status;
